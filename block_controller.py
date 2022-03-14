@@ -16,7 +16,8 @@ class Block_Controller(object):
     CurrentShape_class = 0
     NextShape_class = 0
 
-    
+   
+
     # GetNextMove is main function.
     # input
     #    nextMove : nextMove structure which is empty.
@@ -25,7 +26,7 @@ class Block_Controller(object):
     # output
     #    nextMove : nextMove structure which includes next shape position and the other.
     def GetNextMove(self, nextMove, GameStatus):
-        
+
         t1 = datetime.now()
 
         # print GameStatus
@@ -178,7 +179,6 @@ class Block_Controller(object):
         else:
             LowestX = "Mid"
 
-        print(GAME_LEVEL)
         
         # evaluation paramters
         ## lines to be removed
@@ -277,7 +277,7 @@ class Block_Controller(object):
             for x in range (0 , width-3 , 1):
                 if BlockMaxDy[x] >= 3:
                     if BlockMaxDy[x+1] <= -3:
-                        Chasm = 1
+                        checkChasm = 1
             if BlockMaxDy[width-3] >= 3:
                 Chasm = 1
             
@@ -309,24 +309,10 @@ class Block_Controller(object):
         else:
             pass   
 
-        # only for level 1: avoid trap
-        if self.CurrentShape_index == 2:
-            if joinBlockMaxDy == ",-3,-1,0,1,0,-2,0,2,1":
-              NextShapeCapable = False
-
-        #if self.CurrentShape_index == 5:
-         #   if joinBlockMaxDy == ",-9,0,1,1,0,0,1,0,1":
-          #      NextShapeCapable = False
-        
-        if self.CurrentShape_index == 2:
-            if joinBlockMaxDy == ",0,-1,1,0,-1,0,-1,0,1":
-              NextShapeCapable = False
-
-    
-
+  
         # calc Evaluation Value
         score = 0
-        if self.Elapsed_Time / self.Game_Time > 0.95:
+        if LowestX == "Mid":
             score = score + NextShapeCapable * 40.0
             score = score + (adjFullLines**2-adjFullLines*1.0) * 50.0           
             score = score - nDeadY * 200.0               
@@ -335,9 +321,20 @@ class Block_Controller(object):
             score = score - (max(BlockMaxY)-min(BlockMaxY)) * 12.0
             score = score - keepLow * 5.0
 
+        #elif (self.Game_Time - self.Elapsed_Time) < 10:
+        elif max(CurBlockMaxY) >= 14:    
+            score = score + NextShapeCapable * 40.0
+            score = score + (adjFullLines**2-adjFullLines*1.5) * 50.0           
+            score = score - nDeadY * 60.0               
+            score = score - Chasm * 300.0
+            score = score - (absDy-absDyforLowerEdgeY) * 5.0       
+            score = score - (max(BlockMaxY)-SortedMaxY[1]) * 12.0
+            score = score - (max(BlockMaxY)-SortedMaxY[2]) * 1.0
+            score = score - keepLow * 15.0
+        
         else:    
             score = score + NextShapeCapable * 40.0
-            score = score + (adjFullLines**2-adjFullLines*3.4) * 50.0           
+            score = score + (adjFullLines**2-adjFullLines*3.1) * 50.0           
             score = score - nDeadY * 200.0               
             score = score - Chasm * 180.0
             score = score - (absDy-absDyforLowerEdgeY) * 5.0       
@@ -346,37 +343,37 @@ class Block_Controller(object):
             score = score - keepLow * 15.0
 
 
-#        if prt == True: #88行目のEvalValueのみでprintしたい＝Trueにする。88行目のEvalValueはStrategyで確定されたdirectionx, x0の時のboardを持ってきている
- #           path = '..\\tetris\\game_manager\\block_controller_log.txt'
-  #          with open (path, mode ="a") as f:
-   #             for y in range(height):
-    #                f.write("\n")
-     #               for x in range(width):
-      #                  boardElmt = board[y*width+x] 
-       #                 f.write(str(boardElmt).replace("0","_")+" ")  
-#
- #               f.write("\n" + "\n" + \
-  #              "CurrentShape_index = " + str(self.CurrentShape_index) +"\n" + \
-   #             "score = " + str(score) + "\n" + \
-    #            "LowestX = " + str(LowestX) + "\n" + \
-     #           "keepLow = " + str(keepLow) + "\n" + \
-      #          "NextShapeCapable = " + str(NextShapeCapable) +"\n" + \
-       #         "joinBlockMaxDy = " + str(joinBlockMaxDy) +"\n" + \
-        #        "fullLines = " + str(fullLines) +"\n" + \
-         #       "DeadY = " + str(DeadY) +"\n" + \
-          #      "nDeadY = " + str(nDeadY) +"\n" + \
-           #     "CurDeadY = " + str(CurDeadY) +"\n" + \
-            #    "CurDeadYinRange = " + str(CurDeadYinRange) +"\n" + \
-             #   "nCurDeadYinRange = " + str(nCurDeadYinRange) +"\n" + \
-                #"adjFullLines = " + str(adjFullLines) +"\n" + \
-               # "Chasm = " + str(Chasm) +"\n" + \
-              #  "(absDy-absDyforLowerEdgeY) = " + str(absDy-absDyforLowerEdgeY) +"\n" + \
-             #   "max(BlockMaxY) = " + str(max(BlockMaxY)) +"\n" + \
-            #    "Time_Remain = " + str(self.Game_Time - self.Elapsed_Time) +"\n" + \
-           #     "CurBlockMaxY = " + str(CurBlockMaxY) +"\n" + \
-          #      "BlockMaxY = " + str(BlockMaxY) +"\n" + \
-         #       "SortedMaxY[1] = " +str(SortedMaxY[1]) +"\n" + \
-        #        "BlockMaxDy = " + str(BlockMaxDy) +"\n")
+       # if prt == True: #88行目のEvalValueのみでprintしたい＝Trueにする。88行目のEvalValueはStrategyで確定されたdirectionx, x0の時のboardを持ってきている
+        #    path = '..\\tetris\\game_manager\\block_controller_log.txt'
+         #   with open (path, mode ="a") as f:
+          #      for y in range(height):
+           #         f.write("\n")
+            #        for x in range(width):
+             #           boardElmt = board[y*width+x] 
+              #          f.write(str(boardElmt).replace("0","_")+" ")  
+
+               # f.write("\n" + "\n" + \
+                #"CurrentShape_index = " + str(self.CurrentShape_index) +"\n" + \
+#                "score = " + str(score) + "\n" + \
+ #               "LowestX = " + str(LowestX) + "\n" + \
+  #              "keepLow = " + str(keepLow) + "\n" + \
+   #             "NextShapeCapable = " + str(NextShapeCapable) +"\n" + \
+    #            "joinBlockMaxDy = " + str(joinBlockMaxDy) +"\n" + \
+     #           "fullLines = " + str(fullLines) +"\n" + \
+      #          "DeadY = " + str(DeadY) +"\n" + \
+       #         "nDeadY = " + str(nDeadY) +"\n" + \
+         #       "CurDeadY = " + str(CurDeadY) +"\n" + \
+        #        "CurDeadYinRange = " + str(CurDeadYinRange) +"\n" + \
+          #      "nCurDeadYinRange = " + str(nCurDeadYinRange) +"\n" + \
+           #     "adjFullLines = " + str(adjFullLines) +"\n" + \
+            #    "Chasm = " + str(Chasm) +"\n" + \
+             #   "(absDy-absDyforLowerEdgeY) = " + str(absDy-absDyforLowerEdgeY) +"\n" + \
+              #  "max(BlockMaxY) = " + str(max(BlockMaxY)) +"\n" + \
+     #           "Time_Remain = " + str(self.Game_Time - self.Elapsed_Time) +"\n" + \
+    #            "CurBlockMaxY = " + str(CurBlockMaxY) +"\n" + \
+   #             "BlockMaxY = " + str(BlockMaxY) +"\n" + \
+  #              "SortedMaxY[1] = " +str(SortedMaxY[1]) +"\n" + \
+ #               "BlockMaxDy = " + str(BlockMaxDy) +"\n")
                 
 
         #score = score - maxDy * 0.3                # maxDy
