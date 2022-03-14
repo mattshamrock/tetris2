@@ -324,7 +324,7 @@ class Block_Controller(object):
         #elif (self.Game_Time - self.Elapsed_Time) < 10:
         elif max(CurBlockMaxY) >= 14:    
             score = score + NextShapeCapable * 40.0
-            score = score + (adjFullLines**2-adjFullLines*1.5) * 50.0           
+            score = score + (adjFullLines**2-adjFullLines*1.1) * 50.0           
             score = score - nDeadY * 60.0               
             score = score - Chasm * 300.0
             score = score - (absDy-absDyforLowerEdgeY) * 5.0       
