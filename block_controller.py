@@ -269,17 +269,17 @@ class Block_Controller(object):
             for x in range (1 , width-2 , 1):
                 if BlockMaxDy[x] >= 3:
                     if BlockMaxDy[x+1] <= -3:
-                        Chasm = 1
+                        Chasm += 1
             if BlockMaxDy[width-2] >= 3:
-                Chasm = 1
+                Chasm += 1
             
         else:
             for x in range (0 , width-3 , 1):
                 if BlockMaxDy[x] >= 3:
                     if BlockMaxDy[x+1] <= -3:
-                        checkChasm = 1
+                        Chasm += 1
             if BlockMaxDy[width-3] >= 3:
-                Chasm = 1
+                Chasm += 1
             
 
         #evaluate fitness of the next shape
@@ -302,7 +302,7 @@ class Block_Controller(object):
         elif self.NextShape_index == 6:
             Capablearray = r'0,-1|,1'
         elif self.NextShape_index == 7:
-            Capablearray = r'1,0|-1'
+            Capablearray = r',1,0|-1'
 
         if re.search(Capablearray,joinBlockMaxDy): #whether maxDY has Capable array for the NextShape
             NextShapeCapable = True
@@ -324,7 +324,7 @@ class Block_Controller(object):
         #elif (self.Game_Time - self.Elapsed_Time) < 10:
         elif max(CurBlockMaxY) >= 14:    
             score = score + NextShapeCapable * 40.0
-            score = score + (adjFullLines**2-adjFullLines*1.1) * 50.0           
+            score = score + adjFullLines**2 * 100.0           
             score = score - nDeadY * 60.0               
             score = score - Chasm * 300.0
             score = score - (absDy-absDyforLowerEdgeY) * 5.0       
